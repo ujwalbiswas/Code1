@@ -1,0 +1,60 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import tensorflow as Tnr
+#Read the training data
+train_data = pd.read_csv('salary_data_cleaned.csv')
+
+#Print the data
+print(train_data.head())
+
+#Print the dimesnion of the data
+train_data.shape
+
+#separating X train and Y train
+X_train = train_data[['min_salary','max_salary','avg_salary','same_state','age']]
+Y_train = train_data[['Rating']]
+
+# importing train_test_split from sklearn
+from sklearn.model_selection import train_test_split
+# splitting the data
+X_train, X_test, Y_train, Y_test = train_test_split(X_train, Y_train, test_size = 0.3, random_state = 0)
+
+#print the shape of train and test data after spltting
+print (X_train.shape)
+print (Y_train.shape)
+print (X_test.shape)
+print (Y_test.shape)
+
+from keras.layers import Dense
+from keras.models import Sequential
+
+model = Sequential()
+model.add(Dense(64, input_dim=X_train.shape[1], activation='tanh'))
+model.add(Dense(32, activation='tanh'))
+model.add(Dense(1, activation='tanh'))
+
+model.compile(optimizer=Tnr.keras.optimizers.Adam(learning_rate=0.001),
+                 loss=Tnr.keras.losses.BinaryCrossentropy(), metrics=['accuracy'])
+model.fit(X_train, Y_train, epochs=200, batch_size=32, verbose=1)
+
+# Evaluate the model on the test set
+test_loss, test_acc1 = model.evaluate(X_test, Y_test, verbose=0)
+
+
+# Build the model with ReLU activation function
+model = Sequential()
+model.add(Dense(64, input_dim=X_train.shape[1], activation='relu'))
+model.add(Dense(32, activation='relu'))
+model.add(Dense(1, activation='relu'))
+
+# Compile the model
+model.compile(optimizer=Tnr.keras.optimizers.Adam(learning_rate=0.001),
+                 loss=Tnr.keras.losses.BinaryCrossentropy(), metrics=['accuracy'])
+
+# Train the model
+model.fit(X_train, Y_train, epochs=200, batch_size=32, verbose=1)
+
+# Evaluate the model on the test set
+test_loss, test_acc2 = model.evaluate(X_test, Y_test, verbose=0)
+print("Test accuracy with sigmoid activation:", test_acc1)
+print("Test accuracy with ReLU activation:", test_acc2)
